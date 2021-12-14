@@ -1,28 +1,33 @@
 import './App.css';
 import { useState, useEffect } from 'react'
 import { Routes, Route, useNavigate, useLocation, Navigate, Outlet } from "react-router-dom"
-import Menu from './components/Menu'
-import Login from './components/Login'
-import SignUp from './components/SignUp'
-import { firebaseConfig } from './firebase.js'
-
-// Import the functions you need from the SDKs you need
+import { toBase64 } from './utils.js'
+import { firebaseConfig, DB_URI } from './firebase.js'
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, onValue, set} from "firebase/database";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
+import Menu from './components/Menu'
+import Login from './components/Login'
+import SignUp from './components/SignUp'
 
 
 const app = initializeApp(firebaseConfig)
-// const auth = app.auth()
 const db = getDatabase(app)
-const starCountRef = ref(db, '/users/risto1') // TODO: change user on login
+const starCountRef = ref(db, DB_URI) // TODO: change user on login
 
-const toBase64 = file => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-});
+function RequireAuth() {
+  let location = useLocation();
+
+  if (!sessionStorage.getItem("Auth Token")) {
+    // Redirect them to the /login page, but save the current location they were
+    // trying to go to when they were redirected. This allows us to send them
+    // along to that page after they login, which is a nicer user experience
+    // than dropping them off on the home page.
+    return <Navigate to="/login" state={{ from: location }} />;
+  }
+
+  return <Outlet />;
+}
 
 function App() {
   const [showModal, setShowModal] = useState(null)
@@ -52,7 +57,6 @@ function App() {
     }
 
     setNewItemData((prevData) => ({...prevData, [name]: data}))
-
   }
 
   const handleInputSignup = async (event) => {
@@ -95,8 +99,10 @@ function App() {
       const authentication = getAuth();
       await createUserWithEmailAndPassword(authentication, signupData.email, signupData.password)
       // TODO: check if successful or not
+
       navigate("/", { replace: true });
-    } catch {
+    } catch(error) {
+      console.log(error)
     }
   }
 
@@ -113,20 +119,6 @@ function App() {
       // TODO: show error
     }
   }
-
-  function RequireAuth() {
-    let location = useLocation();
-
-    if (!sessionStorage.getItem("Auth Token")) {
-      // Redirect them to the /login page, but save the current location they were
-      // trying to go to when they were redirected. This allows us to send them
-      // along to that page after they login, which is a nicer user experience
-      // than dropping them off on the home page.
-      return <Navigate to="/login" state={{ from: location }} />;
-    }
-
-    return <Outlet />;
-}
 
   return (
     <div className="App">

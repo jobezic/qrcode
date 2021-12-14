@@ -13,5 +13,7 @@ const firebaseConfig = {
   measurementId: "G-KVR0BB9BK7",
   databaseURL: "https://qr-test-54767-default-rtdb.europe-west1.firebasedatabase.app"
 }
-console.log("imported!")
-export {firebaseConfig}
+
+const DB_URI = "/users/risto1"
+
+export { firebaseConfig, DB_URI }
