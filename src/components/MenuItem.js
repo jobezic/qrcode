@@ -5,7 +5,7 @@ const MenuItem = (props) => (
     </div>
     <span>{props.dish.title}</span>
     <p>{props.dish.desc}</p>
-    <button onClick={props.removeMenuItem(props.dish.id)}>Remove</button>
+    {props.removeMenuItem && <button onClick={props.removeMenuItem(props.dish.id)}>Remove</button>}
   </div>
 )
 
