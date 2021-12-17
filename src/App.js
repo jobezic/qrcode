@@ -10,6 +10,7 @@ import Menu from './components/Menu'
 import MenuList from './components/MenuList'
 import Login from './components/Login'
 import SignUp from './components/SignUp'
+import AdminArea from './components/AdminArea'
 
 
 const app = initializeApp(firebaseConfig)
@@ -157,7 +158,8 @@ function App() {
         <Route path="/signup" element={<SignUp handleInput={handleInputSignup} submit={signup} />} />
         <Route path="/menu/:id" element={<MenuReaders />} />
         <Route element={<RequireAuth />}>
-          <Route path="/" element={<MenuUser />} />
+          <Route path="/" element={<AdminArea app={app} />} />
+          <Route path="/menu-admin" element={<MenuUser />} />
         </Route>
       </Routes>
     </div>
