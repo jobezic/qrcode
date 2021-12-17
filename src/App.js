@@ -1,19 +1,19 @@
 import './App.css';
 import { useState, useEffect } from 'react'
-import { Routes, Route, useNavigate, useLocation, Navigate, Outlet } from "react-router-dom"
+import { Routes, Route, useNavigate, useLocation, Navigate, Outlet, useParams } from "react-router-dom"
 import { toBase64 } from './utils.js'
-import { firebaseConfig, DB_URI } from './firebase.js'
+import { firebaseConfig } from './firebase.js'
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, onValue, set} from "firebase/database";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, setPersistence, browserSessionPersistence } from 'firebase/auth'
 import Menu from './components/Menu'
+import MenuList from './components/MenuList'
 import Login from './components/Login'
 import SignUp from './components/SignUp'
 
 
 const app = initializeApp(firebaseConfig)
 const db = getDatabase(app)
-const starCountRef = ref(db, DB_URI) // TODO: change user on login
 
 function RequireAuth() {
   let location = useLocation();
@@ -29,20 +29,34 @@ function RequireAuth() {
   return <Outlet />;
 }
 
-function App() {
-  const [showModal, setShowModal] = useState(null)
-  const [newItemData, setNewItemData] = useState(null)
-  const [signupData, setSignupData] = useState(null)
-  const [loginData, setLoginData] = useState(null)
+const MenuReaders = (props) => {
   const [dbData, setDbData] = useState([])
-  const navigate = useNavigate()
-
-  const showAddMenuItemModal = () => setShowModal(true)
-  const hideAddMenuItemModal = () => setShowModal(false)
+  const params = useParams()
+  const dbRef = ref(db, `/users/${params.id}/menu`)
 
   useEffect(() => {
-    onValue(starCountRef, (snapshot) => {
+    onValue(dbRef, (snapshot) => {
       setDbData(snapshot.val())
+    })
+  }, [])
+
+  return <MenuList foods={dbData} />
+}
+
+const MenuUser = (props) => {
+  const [dbData, setDbData] = useState([])
+  const [showModal, setShowModal] = useState(null)
+  const [newItemData, setNewItemData] = useState(null)
+  const showAddMenuItemModal = () => setShowModal(true)
+  const hideAddMenuItemModal = () => setShowModal(false)
+  const authentication = getAuth(app)
+
+  useEffect(() => {
+    setPersistence(authentication, browserSessionPersistence).then(() => {
+      const dbRef = ref(db, `/users/${authentication.currentUser.uid}/menu`)
+      onValue(dbRef, (snapshot) => {
+        setDbData(snapshot.val())
+      })
     })
   }, [])
 
@@ -59,6 +73,42 @@ function App() {
     setNewItemData((prevData) => ({...prevData, [name]: data}))
   }
 
+  const addNewMenuItem = async () => {
+    newItemData.id = Math.random().toString(36).substr(2) // generate a random id
+
+    const authentication = getAuth(app)
+    await setPersistence(authentication, browserSessionPersistence)
+
+    const menuRef = ref(db, `/users/${authentication.currentUser.uid}/menu`)
+    set(menuRef, [...dbData, newItemData])
+
+    setNewItemData(null)
+    setShowModal(false)
+  }
+
+  const removeMenuItem = (id) => async() => {
+    const newData = dbData.filter(item => item.id !== id)
+    const authentication = getAuth(app)
+    await setPersistence(authentication, browserSessionPersistence)
+    const dbRef = ref(db, `/users/${authentication.currentUser.uid}/menu`)
+
+    set(dbRef, newData)
+  }
+
+  return <Menu showAddMenuItemModal={showAddMenuItemModal}
+               showModal={showModal}
+               hideAddMenuItemModal={hideAddMenuItemModal}
+               handleInput={handleInputNewItem}
+               addNewMenuItem={addNewMenuItem}
+               dbData={dbData}
+               removeMenuItem={removeMenuItem} />
+}
+
+function App() {
+  const [signupData, setSignupData] = useState(null)
+  const [loginData, setLoginData] = useState(null)
+  const navigate = useNavigate()
+
   const handleInputSignup = async (event) => {
     const {name, value} = event.target
 
@@ -69,27 +119,6 @@ function App() {
     const {name, value} = event.target
 
     setLoginData((prevData) => ({...prevData, [name]: value}))
-  }
-
-  const addNewMenuItem = () => {
-    // TODO: write data somewhere
-
-    // const newPostRef = push(starCountRef);
-    // set(newPostRef, newItemData);
-
-    newItemData.id = Math.random().toString(36).substr(2) // generate a random id
-
-    console.log(newItemData)
-
-    set(starCountRef, [...dbData, newItemData])
-
-    setNewItemData(null)
-    setShowModal(false)
-  }
-
-  const removeMenuItem = (id) => () => {
-    const newData = dbData.filter(item => item.id !== id)
-    set(starCountRef, newData)
   }
 
   const signup = async (event) => {
@@ -111,6 +140,7 @@ function App() {
 
     try {
       const authentication = getAuth();
+      await setPersistence(authentication, browserSessionPersistence)
       const response = await signInWithEmailAndPassword(authentication, loginData.email, loginData.password)
       const token = response._tokenResponse.refreshToken
       sessionStorage.setItem("Auth Token", token)
@@ -125,14 +155,9 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login handleInput={handleInputLogin} submit={login} />} />
         <Route path="/signup" element={<SignUp handleInput={handleInputSignup} submit={signup} />} />
+        <Route path="/menu/:id" element={<MenuReaders />} />
         <Route element={<RequireAuth />}>
-          <Route path="/" element={<Menu showAddMenuItemModal={showAddMenuItemModal}
-                                             showModal={showModal}
-                                             hideAddMenuItemModal={hideAddMenuItemModal}
-                                             handleInput={handleInputNewItem}
-                                             addNewMenuItem={addNewMenuItem}
-                                             dbData={dbData}
-                                             removeMenuItem={removeMenuItem} />} />
+          <Route path="/" element={<MenuUser />} />
         </Route>
       </Routes>
     </div>

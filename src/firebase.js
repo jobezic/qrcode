@@ -14,6 +14,4 @@ const firebaseConfig = {
   databaseURL: "https://qr-test-54767-default-rtdb.europe-west1.firebasedatabase.app"
 }
 
-const DB_URI = "/users/risto1"
-
-export { firebaseConfig, DB_URI }
+export { firebaseConfig }
