@@ -1,3 +1,5 @@
+import Button from '@mui/material/Button'
+
 const MenuItem = (props) => (
   <div className="card">
     <div className="image">
@@ -5,7 +7,7 @@ const MenuItem = (props) => (
     </div>
     <span>{props.dish.title}</span>
     <p>{props.dish.desc}</p>
-    {props.removeMenuItem && <button onClick={props.removeMenuItem(props.dish.id)}>Remove</button>}
+    {props.removeMenuItem && <Button variant="outlined" onClick={props.removeMenuItem(props.dish.id)}>Remove</Button>}
   </div>
 )
 
