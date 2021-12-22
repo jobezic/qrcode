@@ -37,16 +37,6 @@
   }
 }
 
-.modal {
-  position: absolute;
-  top: 7vh;
-  border: 1px solid #ccc;
-  width: 40vw;
-  margin: 0 30vw;
-  background-color: #fff;
-  z-index: 999;
-}
-
 .panel {
   margin: 2em;
 }

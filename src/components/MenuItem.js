@@ -7,7 +7,7 @@ const MenuItem = (props) => (
     </div>
     <span>{props.dish.title}</span>
     <p>{props.dish.desc}</p>
-    {props.removeMenuItem && <Button variant="outlined" onClick={props.removeMenuItem(props.dish.id)}>Remove</Button>}
+    {props.removeMenuItem && <Button variant="outlined" onClick={props.removeMenuItem}>Remove</Button>}
   </div>
 )
 

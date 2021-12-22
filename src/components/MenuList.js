@@ -2,7 +2,7 @@ import MenuItem from './MenuItem'
 
 const MenuList = (props) => (
   <>
-    { props.foods && props.foods.map(item => <MenuItem key={item.title} dish={item} removeMenuItem={props.removeMenuItem} />) }
+    { props.foods && Object.entries(props.foods).map(([id, data]) => <MenuItem key={id} dish={data} removeMenuItem={props.removeMenuItem(id)} />) }
   </>
 )
 

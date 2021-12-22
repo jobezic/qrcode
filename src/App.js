@@ -4,13 +4,14 @@ import { Routes, Route, useNavigate, useLocation, Navigate, Outlet, useParams } 
 import { toBase64 } from './utils.js'
 import { firebaseConfig } from './firebase.js'
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, onValue, set} from "firebase/database";
+import { getDatabase, ref, onValue, set, push, update, remove } from "firebase/database";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, setPersistence, browserSessionPersistence } from 'firebase/auth'
 import Menu from './components/Menu'
 import MenuList from './components/MenuList'
 import Login from './components/Login'
 import SignUp from './components/SignUp'
 import AdminArea from './components/AdminArea'
+import AddMenuItem from './components/AddMenuItem'
 
 
 const app = initializeApp(firebaseConfig)
@@ -46,10 +47,7 @@ const MenuReaders = (props) => {
 
 const MenuUser = (props) => {
   const [dbData, setDbData] = useState([])
-  const [showModal, setShowModal] = useState(null)
-  const [newItemData, setNewItemData] = useState(null)
-  const showAddMenuItemModal = () => setShowModal(true)
-  const hideAddMenuItemModal = () => setShowModal(false)
+  const navigate = useNavigate()
   const authentication = getAuth(app)
 
   useEffect(() => {
@@ -61,53 +59,27 @@ const MenuUser = (props) => {
     })
   }, [])
 
-  const handleInputNewItem = async (event) => {
-    const {name, value} = event.target
-
-    let data;
-    if (name === "img") {
-      data = await toBase64(event.target.files[0])
-    } else {
-      data = value
-    }
-
-    setNewItemData((prevData) => ({...prevData, [name]: data}))
-  }
-
-  const addNewMenuItem = async () => {
-    newItemData.id = Math.random().toString(36).substr(2) // generate a random id
-
-    const authentication = getAuth(app)
-    await setPersistence(authentication, browserSessionPersistence)
-
-    const menuRef = ref(db, `/users/${authentication.currentUser.uid}/menu`)
-    set(menuRef, [...dbData, newItemData])
-
-    setNewItemData(null)
-    setShowModal(false)
-  }
-
   const removeMenuItem = (id) => async() => {
-    const newData = dbData.filter(item => item.id !== id)
     const authentication = getAuth(app)
     await setPersistence(authentication, browserSessionPersistence)
-    const dbRef = ref(db, `/users/${authentication.currentUser.uid}/menu`)
 
-    set(dbRef, newData)
+    const menuItemRef = ref(db, `/users/${authentication.currentUser.uid}/menu/${id}`)
+    try {
+      remove(menuItemRef);
+    } catch (error) {
+      // handle error
+    }
   }
 
-  return <Menu showAddMenuItemModal={showAddMenuItemModal}
-               showModal={showModal}
-               hideAddMenuItemModal={hideAddMenuItemModal}
-               handleInput={handleInputNewItem}
-               addNewMenuItem={addNewMenuItem}
-               dbData={dbData}
-               removeMenuItem={removeMenuItem} />
+  const showAddMenuItem = () => navigate("/add-menu-item")
+
+  return <Menu dbData={dbData} removeMenuItem={removeMenuItem} showAddMenuItem={showAddMenuItem} />
 }
 
 function App() {
   const [signupData, setSignupData] = useState(null)
   const [loginData, setLoginData] = useState(null)
+  const [newItemData, setNewItemData] = useState(null)
   const navigate = useNavigate()
 
   const handleInputSignup = async (event) => {
@@ -151,6 +123,38 @@ function App() {
     }
   }
 
+  const closeAddMenuItem = () => navigate('menu-admin')
+
+  const handleInputNewItem = async (event) => {
+    const {name, value} = event.target
+
+    let data;
+    if (name === "img") {
+      data = await toBase64(event.target.files[0])
+    } else {
+      data = value
+    }
+
+    setNewItemData((prevData) => ({...prevData, [name]: data}))
+  }
+
+  const addNewMenuItem = async (event) => {
+    event.preventDefault()
+
+    const authentication = getAuth(app)
+    await setPersistence(authentication, browserSessionPersistence)
+
+    const menuRef = ref(db, `/users/${authentication.currentUser.uid}/menu`)
+    const newMenuKey = push(menuRef).key;
+    try {
+      update(menuRef, {[newMenuKey]: newItemData});
+      navigate('menu-admin')
+    } catch (error) {
+      // handle error
+    }
+    setNewItemData(null)
+  }
+
   return (
     <div className="App">
       <Routes>
@@ -160,6 +164,7 @@ function App() {
         <Route element={<RequireAuth />}>
           <Route path="/" element={<AdminArea app={app} />} />
           <Route path="/menu-admin" element={<MenuUser />} />
+          <Route path="/add-menu-item" element={<AddMenuItem close={closeAddMenuItem} handleInput={handleInputNewItem} submit={addNewMenuItem} />} />
         </Route>
       </Routes>
     </div>
