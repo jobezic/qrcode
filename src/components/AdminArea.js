@@ -6,10 +6,9 @@ import QRCode from "react-qr-code"
 const AdminArea = (props) => {
   const [dbData, setDbData] = useState({})
 
-  const db = getDatabase(props.app)
-  const authentication = getAuth(props.app)
-
   useEffect(() => {
+    const db = getDatabase(props.app)
+    const authentication = getAuth(props.app)
     setPersistence(authentication, browserSessionPersistence).then(() => {
       const accountInfoRef = ref(db, `/users/${authentication.currentUser.uid}/accountInfo`)
       onValue(accountInfoRef, (snapshot) => {
@@ -21,26 +20,22 @@ const AdminArea = (props) => {
         setDbData((prevData) => ({...prevData, ...snapshot.val()}))
       })
     })
-  }, [])
+  }, [props.app])
 
   return (
     <>
       <h1>Admin Area</h1>
       <div id="admin-data">
-        <table>
-          <tbody>
-            <tr>
-              <td>Email</td>
-              <td>{dbData.email}</td>
-            </tr>
-            <tr>
-              <td>Enabled</td>
-              <td>{dbData.enabled ? 'yes' : 'no'}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div>
+          <div>Email</div>
+          <div>{dbData.email}</div>
+        </div>
+        <div>
+          <div>Enabled</div>
+          <div>{dbData.enabled ? 'yes' : 'no'}</div>
+        </div>
         <div id="qrcode">
-          <QRCode value={dbData.url} />
+          {dbData.url && <QRCode value={dbData.url} />}
         </div>
       </div>
     </>

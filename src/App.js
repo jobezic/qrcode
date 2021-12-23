@@ -4,7 +4,7 @@ import { Routes, Route, useNavigate, useLocation, Navigate, Outlet, useParams } 
 import { toBase64 } from './utils.js'
 import { firebaseConfig } from './firebase.js'
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, onValue, set, push, update, remove } from "firebase/database";
+import { getDatabase, ref, onValue, push, update, remove } from "firebase/database";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, setPersistence, browserSessionPersistence } from 'firebase/auth'
 import Menu from './components/Menu'
 import MenuList from './components/MenuList'
@@ -34,13 +34,13 @@ function RequireAuth() {
 const MenuReaders = (props) => {
   const [dbData, setDbData] = useState([])
   const params = useParams()
-  const dbRef = ref(db, `/users/${params.id}/menu`)
 
   useEffect(() => {
+    const dbRef = ref(db, `/users/${params.id}/menu`)
     onValue(dbRef, (snapshot) => {
       setDbData(snapshot.val())
     })
-  }, [])
+  }, [params])
 
   return <MenuList foods={dbData} />
 }
@@ -48,15 +48,19 @@ const MenuReaders = (props) => {
 const MenuUser = (props) => {
   const [dbData, setDbData] = useState([])
   const navigate = useNavigate()
-  const authentication = getAuth(app)
 
   useEffect(() => {
+    const authentication = getAuth(app)
+    let mounted = true
     setPersistence(authentication, browserSessionPersistence).then(() => {
       const dbRef = ref(db, `/users/${authentication.currentUser.uid}/menu`)
       onValue(dbRef, (snapshot) => {
-        setDbData(snapshot.val())
+        if (mounted) {
+          setDbData(snapshot.val())
+        }
       })
     })
+    return () => mounted = false
   }, [])
 
   const removeMenuItem = (id) => async() => {
