@@ -6,6 +6,7 @@ import { firebaseConfig } from './firebase.js'
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, onValue, push, update, remove } from "firebase/database";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, setPersistence, browserSessionPersistence } from 'firebase/auth'
+import UserBar from './components/UserBar'
 import Menu from './components/Menu'
 import MenuList from './components/MenuList'
 import Login from './components/Login'
@@ -28,7 +29,7 @@ function RequireAuth() {
     return <Navigate to="/login" state={{ from: location }} />;
   }
 
-  return <Outlet />;
+  return <><UserBar /><Outlet /></>;
 }
 
 const MenuReaders = (props) => {

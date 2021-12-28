@@ -24,7 +24,6 @@ const AdminArea = (props) => {
 
   return (
     <>
-      <UserBar />
       <div id="admin-data">
         <div>
           <div>Email</div>
