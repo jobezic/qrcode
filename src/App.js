@@ -13,6 +13,7 @@ import Login from './components/Login'
 import SignUp from './components/SignUp'
 import AdminArea from './components/AdminArea'
 import AddMenuItem from './components/AddMenuItem'
+import { pathToTitle } from './utils'
 
 
 const app = initializeApp(firebaseConfig)
@@ -28,8 +29,7 @@ function RequireAuth() {
     // than dropping them off on the home page.
     return <Navigate to="/login" state={{ from: location }} />;
   }
-
-  return <><UserBar /><Outlet /></>;
+  return <><UserBar title={pathToTitle(location.pathname)} /><Outlet /></>;
 }
 
 const MenuReaders = (props) => {

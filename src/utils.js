@@ -5,4 +5,6 @@ const toBase64 = file => new Promise((resolve, reject) => {
     reader.onerror = error => reject(error);
 });
 
-export { toBase64 }
+const pathToTitle = (path) => path.replaceAll("/", "").replaceAll("-", " ").replace(/\b\w/g, l => l.toUpperCase())
+
+export { toBase64, pathToTitle }
