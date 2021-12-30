@@ -13,6 +13,7 @@ import Login from './components/Login'
 import SignUp from './components/SignUp'
 import AdminArea from './components/AdminArea'
 import AddMenuItem from './components/AddMenuItem'
+import AuthContext from './store/AuthContext'
 import { pathToTitle } from './utils'
 
 
@@ -29,7 +30,13 @@ function RequireAuth() {
     // than dropping them off on the home page.
     return <Navigate to="/login" state={{ from: location }} />;
   }
-  return <><UserBar title={pathToTitle(location.pathname)} /><Outlet /></>;
+
+  return (
+    <AuthContext.Provider value={{ isLoggedin: Boolean(sessionStorage.getItem("Auth Token")) }}>
+      <UserBar title={pathToTitle(location.pathname) || "Personal Area"} />
+        <Outlet />
+    </AuthContext.Provider>
+  )
 }
 
 const MenuReaders = (props) => {
