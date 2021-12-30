@@ -22,6 +22,18 @@ const db = getDatabase(app)
 
 function RequireAuth() {
   let location = useLocation();
+  const navigate = useNavigate()
+
+  const logout = async () => {
+    const authentication = getAuth();
+    try {
+      await authentication.signOut()
+      sessionStorage.removeItem("Auth Token")
+      navigate("/login")
+    } catch {
+      // TODO: handle error
+    }
+  }
 
   if (!sessionStorage.getItem("Auth Token")) {
     // Redirect them to the /login page, but save the current location they were
@@ -33,7 +45,7 @@ function RequireAuth() {
 
   return (
     <AuthContext.Provider value={{ isLoggedin: Boolean(sessionStorage.getItem("Auth Token")) }}>
-      <UserBar title={pathToTitle(location.pathname) || "Personal Area"} />
+      <UserBar title={pathToTitle(location.pathname) || "Personal Area"} logout={logout} />
         <Outlet />
     </AuthContext.Provider>
   )

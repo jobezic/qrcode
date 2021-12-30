@@ -20,6 +20,11 @@ const UserBar = (props) => {
     setAnchorEl(null)
   }
 
+  const logout = () => {
+    setAnchorEl(null)
+    props.logout()
+  }
+
   return (
     <AppBar position="static">
       <Toolbar>
@@ -60,8 +65,7 @@ const UserBar = (props) => {
             open={Boolean(anchorEl)}
             onClose={handleClose}
           >
-            <MenuItem onClick={handleClose}>Profile</MenuItem>
-            <MenuItem onClick={handleClose}>My account</MenuItem>
+            <MenuItem onClick={logout}>Logout</MenuItem>
         </Menu>
       </Toolbar>
     </AppBar>
