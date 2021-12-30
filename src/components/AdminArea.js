@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { getDatabase, ref, onValue } from "firebase/database";
+import { initializeApp } from "firebase/app"
 import { getAuth, setPersistence, browserSessionPersistence } from 'firebase/auth'
 import QRCode from "react-qr-code"
+import { firebaseConfig } from '../firebase.js'
 
 const AdminArea = (props) => {
   const [dbData, setDbData] = useState({})
 
   useEffect(() => {
-    const db = getDatabase(props.app)
-    const authentication = getAuth(props.app)
+    const app = initializeApp(firebaseConfig)
+    const db = getDatabase(app)
+    const authentication = getAuth(app)
     setPersistence(authentication, browserSessionPersistence).then(() => {
       const accountInfoRef = ref(db, `/users/${authentication.currentUser.uid}/accountInfo`)
       onValue(accountInfoRef, (snapshot) => {
@@ -20,7 +24,7 @@ const AdminArea = (props) => {
         setDbData((prevData) => ({...prevData, ...snapshot.val()}))
       })
     })
-  }, [props.app])
+  }, [])
 
   return (
     <>
@@ -36,6 +40,7 @@ const AdminArea = (props) => {
         <div id="qrcode">
           {dbData.url && <QRCode value={dbData.url} />}
         </div>
+        <div><Link to="/menu-admin">Go to the Menu</Link></div>
       </div>
     </>
   )
