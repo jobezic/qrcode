@@ -5,6 +5,8 @@ import { initializeApp } from "firebase/app"
 import { getAuth, setPersistence, browserSessionPersistence } from 'firebase/auth'
 import QRCode from "react-qr-code"
 import { firebaseConfig } from '../firebase.js'
+import Container from '@mui/material/Container'
+import DoneRoundedIcon from '@mui/icons-material/DoneRounded';
 
 const AdminArea = (props) => {
   const [dbData, setDbData] = useState({})
@@ -29,18 +31,26 @@ const AdminArea = (props) => {
   return (
     <>
       <div id="admin-data">
-        <div>
-          <div>Email</div>
-          <div>{dbData.email}</div>
-        </div>
-        <div>
-          <div>Enabled</div>
-          <div>{dbData.enabled ? 'yes' : 'no'}</div>
-        </div>
-        <div id="qrcode">
+        <Container sx={{m: "1em"}}>
+          <table>
+            <tbody>
+              <tr>
+                <th>Email</th>
+                <td>{dbData.email}</td>
+              </tr>
+              <tr>
+                <th>Enabled</th>
+                <td>{dbData.enabled ? <DoneRoundedIcon /> : 'no'}</td>
+              </tr>
+            </tbody>
+          </table>
+        </Container>
+        <Container id="qrcode" sx={{m: "1em"}}>
           {dbData.url && <QRCode value={dbData.url} />}
-        </div>
-        <div><Link to="/menu-admin">Go to the Menu</Link></div>
+        </Container>
+        <Container id="qrcode" sx={{m: "1em"}}>
+          <Link to="/menu-admin">Go to the Menu</Link>
+        </Container>
       </div>
     </>
   )
