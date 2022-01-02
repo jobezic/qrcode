@@ -8,7 +8,6 @@ import { getDatabase, ref, onValue, push, update, remove } from "firebase/databa
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, setPersistence, browserSessionPersistence } from 'firebase/auth'
 import UserBar from './components/UserBar'
 import Menu from './components/Menu'
-import MenuList from './components/MenuList'
 import Login from './components/Login'
 import SignUp from './components/SignUp'
 import AdminArea from './components/AdminArea'
@@ -62,7 +61,7 @@ const MenuReaders = (props) => {
     })
   }, [params])
 
-  return <MenuList foods={dbData} />
+  return <Menu dbData={dbData} />
 }
 
 const MenuUser = (props) => {
