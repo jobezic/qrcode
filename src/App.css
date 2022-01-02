@@ -42,11 +42,19 @@
 }
 
 .card {
-  margin-bottom: 2em;
+  margin-bottom: 5em;
 }
 
 .card .image {
   margin-bottom: 1em;
+}
+
+.card .image img {
+  max-width: 100%;
+  max-height: 100%;
+  border: 1px;
+  border-style: solid;
+  border-color: lightgrey;
 }
 
 .card p {
