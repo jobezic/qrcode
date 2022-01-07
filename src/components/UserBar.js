@@ -33,8 +33,12 @@ const UserBar = (props) => {
 
   const logout = () => {
     setAnchorEl(null)
-    myContext.logout()
-    navigate("/login")
+    try {
+      myContext.logout()
+      navigate("/login")
+    } catch {
+      // TODO: handle error
+    }
   }
 
   return (

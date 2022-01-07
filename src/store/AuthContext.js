@@ -5,12 +5,8 @@ const isLoggedin = () => Boolean(sessionStorage.getItem("Auth Token"))
 
 const logout = async () => {
   const authentication = getAuth();
-  try {
-    await authentication.signOut()
-    sessionStorage.removeItem("Auth Token")
-  } catch {
-    // TODO: handle error
-  }
+  await authentication.signOut()
+  sessionStorage.removeItem("Auth Token")
 }
 
 const AuthContext = createContext({
