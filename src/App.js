@@ -22,18 +22,6 @@ const db = getDatabase(app)
 
 function RequireAuth() {
   let location = useLocation();
-  const navigate = useNavigate()
-
-  const logout = async () => {
-    const authentication = getAuth();
-    try {
-      await authentication.signOut()
-      sessionStorage.removeItem("Auth Token")
-      navigate("/login")
-    } catch {
-      // TODO: handle error
-    }
-  }
 
   if (!sessionStorage.getItem("Auth Token")) {
     // Redirect them to the /login page, but save the current location they were
@@ -45,7 +33,7 @@ function RequireAuth() {
 
   return (
     <AuthProvider>
-      <UserBar title={pathToTitle(location.pathname) || "Personal Area"} logout={logout} />
+      <UserBar title={pathToTitle(location.pathname) || "Personal Area"} />
         <Outlet />
     </AuthProvider>
   )

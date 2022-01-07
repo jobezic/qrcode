@@ -33,7 +33,8 @@ const UserBar = (props) => {
 
   const logout = () => {
     setAnchorEl(null)
-    props.logout()
+    myContext.logout()
+    navigate("/login")
   }
 
   return (
