@@ -13,7 +13,7 @@ import SignUp from './components/SignUp'
 import AdminArea from './components/AdminArea'
 import AddMenuItem from './components/AddMenuItem'
 import Privacy from './components/Privacy'
-import AuthContext from './store/AuthContext'
+import { AuthProvider } from './store/AuthContext'
 import { pathToTitle } from './utils'
 
 
@@ -44,10 +44,10 @@ function RequireAuth() {
   }
 
   return (
-    <AuthContext.Provider value={{ isLoggedin: Boolean(sessionStorage.getItem("Auth Token")) }}>
+    <AuthProvider>
       <UserBar title={pathToTitle(location.pathname) || "Personal Area"} logout={logout} />
         <Outlet />
-    </AuthContext.Provider>
+    </AuthProvider>
   )
 }
 
