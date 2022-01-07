@@ -12,6 +12,7 @@ import Login from './components/Login'
 import SignUp from './components/SignUp'
 import AdminArea from './components/AdminArea'
 import AddMenuItem from './components/AddMenuItem'
+import Privacy from './components/Privacy'
 import AuthContext from './store/AuthContext'
 import { pathToTitle } from './utils'
 
@@ -184,6 +185,7 @@ function App() {
         <Route path="/login" element={<Login handleInput={handleInputLogin} submit={login} />} />
         <Route path="/signup" element={<SignUp handleInput={handleInputSignup} submit={signup} />} />
         <Route path="/menu/:id" element={<MenuReaders />} />
+        <Route path="/privacy" element={<Privacy />} />
         <Route element={<RequireAuth />}>
           <Route path="/" element={<AdminArea app={app} />} />
           <Route path="/menu-admin" element={<MenuUser />} />

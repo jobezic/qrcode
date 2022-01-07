@@ -1,5 +1,8 @@
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Link from '@mui/material/Link'
 
 const SignUp = (props) => (
   <div id="signup">
@@ -10,6 +13,9 @@ const SignUp = (props) => (
       </div>
       <div>
         <TextField variant="standard" type="password" id="password" name="password" label="Password" onChange={props.handleInput} required />
+      </div>
+      <div>
+        <FormControlLabel control={<Link><Checkbox required /></Link>} label={<Link href="/privacy">Accept Terms & Conditions</Link>} />
       </div>
       <div className="panel">
         <Button variant="contained" type="submit">Register</Button>
