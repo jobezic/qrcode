@@ -47,6 +47,10 @@ const AdminArea = (props) => {
     img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
   }
 
+  if (!dbData.url) {
+    return <h3>Loading...</h3>
+  }
+
   return (
     <>
       <div id="admin-data">
@@ -65,6 +69,7 @@ const AdminArea = (props) => {
           </table>
         </Container>
         <Container sx={{m: "1em", cursor: "pointer"}}>
+          <h4>Click on the QR Code below to download it</h4>
           {dbData.url && <QRCode id="qrcode" value={dbData.url} onClick={downloadQrCode} />}
         </Container>
         <Container id="qrcode" sx={{m: "1em"}}>
