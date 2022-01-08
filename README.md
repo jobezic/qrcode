@@ -10,13 +10,12 @@ You can learn:
 - Retrieve data in `useEffect`
 - Use some components of Material UI to create nice and consistent UIs
 
-## TODO
-- testing with Jest / React Testing Library
-- ...
-
-
 Start it by running:
 
 ```
 yarn start
 ```
+
+## TODO
+- testing with Jest / React Testing Library
+- ...
