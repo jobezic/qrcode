@@ -8,6 +8,11 @@ You can learn:
 - How to show a QR Code
 - How to store and retrieve data with Firebase Realtime db
 - Retrieve data in `useEffect`
+- Use some components of Material UI to create nice and consistent UIs
+
+## TODO
+- testing with Jest / React Testing Library
+- ...
 
 
 Start it by running:
